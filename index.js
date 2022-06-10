@@ -34,8 +34,8 @@ app.get('/api/:date', function (req, res) {
   var date = req.params.date;
   let integerReg = /^\d+$/;
 	let response = {};
-	console.log('received : ', date);
-	if (date.includes('-')) {
+	console.log('received : ', date, 'datified', new Date(date));
+	if (date.includes('-') || date.includes(' ')) {
 		response.unix = UtcToUnix(date);
 		response.utc = new Date(date).toUTCString();
 	} else if (integerReg.test(date)) {
