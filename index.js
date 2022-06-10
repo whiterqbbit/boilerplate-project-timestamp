@@ -37,7 +37,7 @@ app.get('/api/:date', function (req, res) {
 	console.log('received : ', date);
 	if (date.includes('-')) {
 		response.unix = UtcToUnix(date);
-		response.utc = new Date(date).toGMTString();
+		response.utc = new Date(date).toUTCString();
 	} else if (integerReg.test(date)) {
 		response.unix = parseInt(date);
 		response.utc = unixToUtc(date);
