@@ -28,24 +28,26 @@ app.get('/api/hello', function (req, res) {
 	res.json({ greeting: 'hello API' });
 });
 
-let integerReg = /^\d+$/;
 
 app.get('/api/', function (req, res) {
-	res.json({ unix: Date.now(), utc: new Date().toUTCString() });
+  res.json({ unix: Date.now(), utc: new Date().toUTCString() });
 });
 
 app.get('/api/:date', function (req, res) {
-	var date = req.params.date;
+  var date = req.params.date;
+  let integerReg = /^\d+$/;
 	let response = {};
+	console.log('received : ', date);
 	if (date.includes('-')) {
-		console.log('date includes -');
 		response.unix = UtcToUnix(date);
 		response.utc = new Date(date).toGMTString();
 	} else if (integerReg.test(date)) {
-		console.log('date is integer');
 		response.unix = parseInt(date);
 		response.utc = unixToUtc(date);
-	} else response = { error: 'Invalid Date' };
+	}
+	if (!response.utc || !response.unix ) {
+		response = { error: 'Invalid Date' };
+	}
 	res.json(response);
 });
 
