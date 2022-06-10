@@ -10,6 +10,11 @@ var app = express();
 var cors = require('cors');
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
+// listen for requests :)
+var listener = app.listen(3000, function () {
+	console.log('Your app is listening on port ' + listener.address().port);
+});
+
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
@@ -23,17 +28,25 @@ app.get('/api/hello', function (req, res) {
 	res.json({ greeting: 'hello API' });
 });
 
-app.get('/api/:aConvertir', function (req, res) {
-	var aConvertir = req.params.aConvertir;
-	if (aConvertir.indexOf('-') > -1)
-		res.json({ unix: UtcToUnix(aConvertir), utc: new Date(aConvertir).toGMTString() });
-	else res.json({ unix: parseInt(aConvertir), utc: unixToUtc(aConvertir) });
-	// else res.json({ utc: UtcToUnix(aConvertir) });
+let integerReg = /^\d+$/;
+
+app.get('/api/', function (req, res) {
+	res.json({ unix: Date.now(), utc: new Date().toUTCString() });
 });
 
-// listen for requests :)
-var listener = app.listen(3000, function () {
-	console.log('Your app is listening on port ' + listener.address().port);
+app.get('/api/:date', function (req, res) {
+	var date = req.params.date;
+	let response = {};
+	if (date.includes('-')) {
+		console.log('date includes -');
+		response.unix = UtcToUnix(date);
+		response.utc = new Date(date).toGMTString();
+	} else if (integerReg.test(date)) {
+		console.log('date is integer');
+		response.unix = parseInt(date);
+		response.utc = unixToUtc(date);
+	} else response = { error: 'Invalid Date' };
+	res.json(response);
 });
 
 function unixToUtc(unix) {
